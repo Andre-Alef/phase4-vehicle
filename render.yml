@@ -1,0 +1,5 @@
+services:
+  - type: web
+    name: phase3
+    env: docker-compose
+    region: sgp
