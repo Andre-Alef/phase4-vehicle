@@ -3,3 +3,10 @@ services:
     name: phase3
     env: docker-compose
     region: sa-east-1
+
+databases:
+  - name: postgres_phase3
+    type: postgres
+    env: docker-compose
+    version: 15
+    region: sa-east-1
