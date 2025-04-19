@@ -2,16 +2,18 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PaymentService } from "./payment.service";
 
-test("should return true when payment is successful", () => {
+test("should not throw when payment is successful", () => {
   const service = new PaymentService();
-  const result = service.pay({ type: "card", meta: "VALID_CARD" });
-  assert.equal(result, true);
+  assert.doesNotThrow(() => {
+    service.pay({ type: "card", meta: "VALID_CARD" });
+  });
 });
 
-test("should return false when card is FAIL_PAYMENT", () => {
+test("should throw when card is FAIL_PAYMENT", () => {
   const service = new PaymentService();
-  const result = service.pay({ type: "card", meta: "FAIL_PAYMENT" });
-  assert.equal(result, false);
+  assert.throws(() => {
+    service.pay({ type: "card", meta: "FAIL_PAYMENT" });
+  }, /Payment failed/);
 });
 
 test("should throw if type is not card", () => {
