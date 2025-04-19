@@ -12,6 +12,7 @@ interface ICreateOrder {
 
 interface IFinishOrder {
   id: string;
+  userId: string;
   paymentInfo: IPaymentMeta;
 }
 
@@ -60,10 +61,12 @@ export class OrderService {
     return this.orderRepository.get(id);
   }
 
-  async finishOrder({ id, paymentInfo }: IFinishOrder): Promise<Order> {
+  async finishOrder({ id, userId, paymentInfo }: IFinishOrder): Promise<Order> {
     const order = await this.get(id);
     const vehicle = await this.vehicleService.get(order.vehicleId);
     if (!vehicle?.isAvailable) throw new Error("Vehicle is not available");
+    if (order?.userId !== userId)
+      throw new Error("Order created by other user");
     this.paymentService.pay(paymentInfo);
 
     await this.vehicleService.update({

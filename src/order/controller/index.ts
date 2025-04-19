@@ -46,6 +46,7 @@ orderController.post("/", requireAuth, async (req: any, res) => {
 orderController.post("/finish", requireAuth, async (req: any, res) => {
   const order = await orderService.finishOrder({
     ...req.body,
+    userId: req.oidc.user.email,
   });
 
   res.send(
