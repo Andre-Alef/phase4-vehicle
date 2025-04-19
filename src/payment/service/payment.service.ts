@@ -4,12 +4,12 @@ import { IPaymentMeta } from "../interfaces/payment-meta";
 
 export class PaymentService implements IPayment {
   constructor() {}
-  pay(data: IPaymentMeta): boolean {
+  pay(data: IPaymentMeta): void {
     if (data?.type === "card") return this.payByCard({ card: data.meta });
     throw new Error("Method not implemented.");
   }
-  payByCard({ card }: ICard): boolean {
-    if (card === "FAIL_PAYMENT") return false;
-    else return true;
+  payByCard({ card }: ICard): void {
+    console.log({ card });
+    if (card === "FAIL_PAYMENT") throw new Error("Payment failed.");
   }
 }

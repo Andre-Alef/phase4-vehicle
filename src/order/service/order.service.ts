@@ -8,14 +8,15 @@ import { IOrderRepository } from "../repository/order.repository";
 interface ICreateOrder {
   userId: string;
   vehicleId: string;
-  status: string;
+}
+
+interface IFinishOrder {
+  id: string;
   paymentInfo: IPaymentMeta;
 }
 
 interface IUpdateOrder {
   id: string;
-  userId: string;
-  vehicleId: string;
   status: string;
 }
 
@@ -26,30 +27,20 @@ export class OrderService {
     readonly vehicleService: VehicleService,
     readonly paymentService: PaymentService
   ) {}
-  async create({
-    vehicleId,
-    userId,
-    status,
-    paymentInfo,
-  }: ICreateOrder): Promise<Order> {
+
+  async create({ vehicleId, userId }: ICreateOrder): Promise<Order> {
     const order: Order = this.orderFactory.create({
       vehicleId,
       userId,
-      status,
+      status: "Placed",
     });
 
     const vehicle = await this.vehicleService.get(order.vehicleId);
 
     if (!vehicle?.isAvailable) throw new Error("Vehicle is not available");
-    if (!this.paymentService.pay(paymentInfo))
-      throw new Error("Payment failed");
 
-    order.status = "Success";
     const createdOrder: Order = await this.orderRepository.save(order);
-    this.vehicleService.update({
-      id: order.vehicleId,
-      isAvailable: false,
-    });
+
     return createdOrder;
   }
 
@@ -67,5 +58,22 @@ export class OrderService {
 
   async get(id: string): Promise<Order> {
     return this.orderRepository.get(id);
+  }
+
+  async finishOrder({ id, paymentInfo }: IFinishOrder): Promise<Order> {
+    const order = await this.get(id);
+    const vehicle = await this.vehicleService.get(order.vehicleId);
+    if (!vehicle?.isAvailable) throw new Error("Vehicle is not available");
+    this.paymentService.pay(paymentInfo);
+
+    await this.vehicleService.update({
+      id: order.vehicleId,
+      isAvailable: false,
+    });
+
+    return await this.update({
+      id: order.id,
+      status: "Success",
+    });
   }
 }

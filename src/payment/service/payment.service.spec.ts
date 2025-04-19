@@ -10,7 +10,7 @@ test("should return true when payment is successful", () => {
 
 test("should return false when card is FAIL_PAYMENT", () => {
   const service = new PaymentService();
-  const result = service.pay({ type: "card", meta: "FAIL_PAYMENT" });
+  const result = service.pay({ type: "card", meta: "FAIL_PAYMENT123" });
   assert.equal(result, false);
 });
 

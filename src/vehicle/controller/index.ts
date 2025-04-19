@@ -1,8 +1,9 @@
 import express, { Router } from "express";
-import { requireAuth } from "../..";
+
 import { VehicleFactory } from "../factory/vehicle.factory";
 import { VehicleRepository } from "../repository/vehicle.repository";
 import { VehicleService } from "../service/vehicle.service";
+import { requireAuth } from "../../auth";
 
 const vehicleRepository = new VehicleRepository();
 const vehicleFactory = new VehicleFactory();
