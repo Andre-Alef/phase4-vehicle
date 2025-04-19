@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 
 export function requireAuth(req: any, res: any, next: NextFunction) {
   if (!req.oidc?.isAuthenticated()) {
-    return res.send("Autenticação falhou");
+    return res.send("Auth failed");
   }
   next();
 }
@@ -36,5 +36,5 @@ app.get("/profile", requireAuth, (req: any, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("Servidor rodando em http://localhost:3000");
+  console.log("Servidor rodando");
 });
