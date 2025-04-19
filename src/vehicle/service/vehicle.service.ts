@@ -13,12 +13,12 @@ interface ICreateVehicle {
 
 interface IUpdateVehicle {
   id: string;
-  brand: string;
-  model: string;
-  year: number;
-  color: string;
-  price: number;
-  isAvailable: boolean;
+  brand?: string;
+  model?: string;
+  year?: number;
+  color?: string;
+  price?: number;
+  isAvailable?: boolean;
 }
 
 export class VehicleService {

@@ -4,14 +4,21 @@ import { OrderFactory } from "../factory/order.factory";
 import { OrderRepository } from "../repository/order.repository";
 import { OrderService } from "../service/order.service";
 import { VehicleRepository } from "../../vehicle/repository/vehicle.repository";
+import { PaymentService } from "../../payment/service/payment.service";
+import { VehicleService } from "../../vehicle/service/vehicle.service";
+import { VehicleFactory } from "../../vehicle/factory/vehicle.factory";
 
+const vehicleFactory = new VehicleFactory();
 const vehicleRepository = new VehicleRepository();
+const vehicleService = new VehicleService(vehicleRepository, vehicleFactory);
 const orderRepository = new OrderRepository();
 const orderFactory = new OrderFactory();
+const paymentService = new PaymentService();
 const orderService = new OrderService(
   orderRepository,
   orderFactory,
-  vehicleRepository
+  vehicleService,
+  paymentService
 );
 
 const orderController = Router();
@@ -53,7 +60,7 @@ orderController.patch("/", requireAuth, async (req: any, res) => {
   );
 });
 
-orderController.get("/id", requireAuth, async (req: any, res) => {
+orderController.get("/:id", requireAuth, async (req: any, res) => {
   const order = await orderService.get({ ...req.params.id });
   res.send(
     JSON.stringify(

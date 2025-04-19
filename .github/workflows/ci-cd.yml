@@ -1,0 +1,37 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "22"
+
+      # Install dependencies for the 'phase3' app
+      - name: Install dependencies for phase3 app
+        run: |
+          npm install
+
+      # Generate Prisma client for phase3 app (ensure Prisma is generated before usage)
+      - name: Generate Prisma client for phase3 app
+        run: |
+          npx prisma generate
+
+      # Run unit tests for the 'phase3' app
+      - name: Run tests for phase3 app
+        run: |
+          npm run test  # Or whatever your test script is
