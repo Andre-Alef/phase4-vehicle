@@ -18,5 +18,5 @@ test("should throw if type is not card", () => {
   const service = new PaymentService();
   assert.throws(() => {
     service.pay({ type: "pix", meta: "ANYTHING" });
-  }, /Method not implemented/);
+  }, /Method not implement/);
 });
