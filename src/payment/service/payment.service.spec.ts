@@ -12,7 +12,7 @@ test("should not throw when payment is successful", () => {
 test("should throw when card is FAIL_PAYMENT", () => {
   const service = new PaymentService();
   assert.throws(() => {
-    service.pay({ type: "card", meta: "FAIL_PAYMENT" });
+    service.pay({ type: "card", meta: "FAIL_PAYMENT2" });
   }, /Payment failed/);
 });
 
