@@ -2,16 +2,16 @@
 FROM node:22-alpine
 
 # Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /usr/src/vehicle
 
 # Copy package.json and package-lock.json to install dependencies
-COPY ./package*.json ./
+COPY ../package*.json ./
 
 # Install dependencies (including dev dependencies like NestJS CLI)
 RUN npm install
 
 # Copy the rest of the application code
-COPY ./ /usr/src/app
+COPY ./ /usr/src/vehicle
 
 # Generate Prisma Client (make sure prisma is part of your dependencies)
 RUN npx prisma generate

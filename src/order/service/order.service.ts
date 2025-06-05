@@ -1,38 +1,36 @@
-import { IPaymentMeta } from "../../payment/interfaces/payment-meta";
-import { PaymentService } from "../../payment/service/payment.service";
+import axios from "axios";
 import { VehicleService } from "../../vehicle/service/vehicle.service";
 import { OrderFactory } from "../factory/order.factory";
 import { Order } from "../model/order.model";
 import { IOrderRepository } from "../repository/order.repository";
 
 interface ICreateOrder {
-  userId: string;
+  cpf: string;
   vehicleId: string;
+  //date: Date;
 }
 
 interface IFinishOrder {
   id: string;
-  userId: string;
-  paymentInfo: IPaymentMeta;
+  paymentInfo: "success" | "fail";
 }
 
 interface IUpdateOrder {
   id: string;
   status: string;
 }
-
+const URL = "http://phase4:3000";
 export class OrderService {
   constructor(
     readonly orderRepository: IOrderRepository,
     readonly orderFactory: OrderFactory,
-    readonly vehicleService: VehicleService,
-    readonly paymentService: PaymentService
+    readonly vehicleService: VehicleService
   ) {}
 
-  async create({ vehicleId, userId }: ICreateOrder): Promise<Order> {
+  async create({ vehicleId, cpf }: ICreateOrder): Promise<Order> {
     const order: Order = this.orderFactory.create({
       vehicleId,
-      userId,
+      cpf,
       status: "Placed",
     });
 
@@ -41,6 +39,21 @@ export class OrderService {
     if (!vehicle?.isAvailable) throw new Error("Vehicle is not available");
 
     const createdOrder: Order = await this.orderRepository.save(order);
+
+    await this.vehicleService.update({
+      id: order.vehicleId,
+      isAvailable: false,
+    });
+
+    try {
+      const response = await axios.patch(`${URL}/vehicles/availability`, {
+        id: vehicle.id,
+        isAvailable: false,
+      });
+      console.log("Veículo criado com sucesso:", response.data);
+    } catch (error) {
+      console.error("Erro ao criar veículo:", error);
+    }
 
     return createdOrder;
   }
@@ -61,22 +74,36 @@ export class OrderService {
     return this.orderRepository.get(id);
   }
 
-  async finishOrder({ id, userId, paymentInfo }: IFinishOrder): Promise<Order> {
-    const order = await this.get(id);
+  async finishOrder({ id, paymentInfo }: IFinishOrder): Promise<Order> {
+    let order = await this.get(id);
     const vehicle = await this.vehicleService.get(order.vehicleId);
-    if (!vehicle?.isAvailable) throw new Error("Vehicle is not available");
-    if (order?.userId !== userId)
-      throw new Error("Order created by other user");
-    this.paymentService.pay(paymentInfo);
 
-    await this.vehicleService.update({
-      id: order.vehicleId,
-      isAvailable: false,
-    });
+    if (paymentInfo === "success") {
+      order = await this.update({
+        id: order.id,
+        status: "Success",
+      });
+    } else {
+      order = await this.update({
+        id: order.id,
+        status: "Failed",
+      });
+      await this.vehicleService.update({
+        id: order.vehicleId,
+        isAvailable: true,
+      });
+    }
 
-    return await this.update({
-      id: order.id,
-      status: "Success",
-    });
+    try {
+      const response = await axios.patch(`${URL}/vehicles/availability`, {
+        id: vehicle.id,
+        isAvailable: paymentInfo === "success" ? false : true,
+      });
+      console.log("Veículo criado com sucesso:", response.data);
+    } catch (error) {
+      console.error("Erro ao criar veículo:", error);
+    }
+
+    return order;
   }
 }

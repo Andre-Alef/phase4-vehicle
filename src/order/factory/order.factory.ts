@@ -3,12 +3,12 @@ import { Order } from "../model/order.model";
 interface IOrder {
   id?: string;
   vehicleId: string;
-  userId: string;
+  cpf: string;
   status: string;
 }
 
 export class OrderFactory {
-  create({ id, vehicleId, userId, status }: IOrder): Order {
-    return new Order({ id, vehicleId, userId, status });
+  create({ id, vehicleId, cpf, status }: IOrder): Order {
+    return new Order({ id, vehicleId, cpf, status });
   }
 }

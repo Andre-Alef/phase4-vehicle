@@ -3,19 +3,19 @@ import { randomUUID } from "crypto";
 interface IOrder {
   id?: string;
   vehicleId: string;
-  userId: string;
+  cpf: string;
   status: string;
 }
 export class Order {
   readonly #id: string;
   readonly #vehicleId: string;
-  readonly #userId: string;
+  readonly #cpf: string;
   #status: string;
 
-  constructor({ id = randomUUID(), vehicleId, userId, status }: IOrder) {
+  constructor({ id = randomUUID(), vehicleId, cpf, status }: IOrder) {
     this.#id = id;
     this.#vehicleId = vehicleId;
-    this.#userId = userId;
+    this.#cpf = cpf;
     this.#status = status;
   }
   get id(): string {
@@ -26,8 +26,8 @@ export class Order {
     return this.#vehicleId;
   }
 
-  get userId(): string {
-    return this.#userId;
+  get cpf(): string {
+    return this.#cpf;
   }
 
   get status(): string {

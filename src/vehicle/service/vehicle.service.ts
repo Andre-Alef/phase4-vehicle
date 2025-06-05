@@ -3,6 +3,7 @@ import { Vehicle } from "../model/vehicle.model";
 import { IVehicleRepository } from "../repository/vehicle.repository";
 
 interface ICreateVehicle {
+  id: string;
   brand: string;
   model: string;
   year: number;
@@ -28,23 +29,24 @@ export class VehicleService {
   ) {}
   async create({
     brand,
+    id,
     model,
     year,
     color,
     price,
-    isAvailable,
   }: ICreateVehicle): Promise<Vehicle> {
     const vehicle: Vehicle = this.vehicleFactory.create({
+      id,
       brand,
       model,
       year,
       color,
       price,
-      isAvailable,
+      isAvailable: true,
     });
 
     const created = await this.vehicleRepository.save(vehicle);
-    console.log(created);
+    console.log("event", created?.id);
     return created;
   }
 
