@@ -1,5 +1,5 @@
 services:
   - type: web
-    name: phase3
+    name: phase4-vehicle
     env: docker-compose
     region: sa-east-1
