@@ -15,6 +15,7 @@ describe("OrderFactory", () => {
       vehicleId: "v1",
       cpf: "12345678901",
       status: "pending",
+      date: new Date(),
     };
 
     const order = factory.create(orderData);

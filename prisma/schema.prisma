@@ -25,10 +25,11 @@ model Vehicle {
 }
 
 model Order {
-  id        String @id
+  id        String   @id
   vehicleId String
   cpf       String
   status    String
+  date      DateTime
 
   vehicle Vehicle @relation(fields: [vehicleId], references: [id])
 }

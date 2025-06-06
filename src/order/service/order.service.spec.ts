@@ -13,6 +13,7 @@ describe("OrderService", () => {
   let orderFactoryMock: jest.Mocked<OrderFactory>;
   let vehicleServiceMock: any;
   let orderService: OrderService;
+  const URL = process.env.PHASE4_API_URL;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -40,7 +41,11 @@ describe("OrderService", () => {
 
   describe("create", () => {
     it("creates an order when vehicle is available and updates vehicle availability", async () => {
-      const orderInput = { vehicleId: "v1", cpf: "12345678900" };
+      const orderInput = {
+        vehicleId: "v1",
+        cpf: "12345678900",
+        date: new Date(),
+      };
       const orderCreated = new Order({
         id: "o1",
         ...orderInput,
@@ -68,6 +73,7 @@ describe("OrderService", () => {
         vehicleId: orderInput.vehicleId,
         cpf: orderInput.cpf,
         status: "Placed",
+        date: orderInput.date,
       });
       expect(vehicleServiceMock.get).toHaveBeenCalledWith(
         orderCreated.vehicleId
@@ -78,14 +84,18 @@ describe("OrderService", () => {
         isAvailable: false,
       });
       expect(mockedAxios.patch).toHaveBeenCalledWith(
-        "http://phase4:3000/vehicles/availability",
+        `${URL}/vehicles/availability`,
         { id: vehicle.id, isAvailable: false }
       );
       expect(result).toBe(orderCreated);
     });
 
     it("throws if vehicle is not available", async () => {
-      const orderInput = { vehicleId: "v1", cpf: "12345678900" };
+      const orderInput = {
+        vehicleId: "v1",
+        cpf: "12345678900",
+        date: new Date(),
+      };
       const orderCreated = new Order({
         id: "o1",
         ...orderInput,
@@ -121,11 +131,13 @@ describe("OrderService", () => {
         vehicleId: "v1",
         cpf: "12345678900",
         status: "Placed",
+        date: new Date(),
       });
       const updatedOrder = new Order({
         vehicleId: order.vehicleId,
         cpf: order.cpf,
         status: "Success",
+        date: order.date,
       });
 
       orderRepositoryMock.get.mockResolvedValue(order);
@@ -143,7 +155,13 @@ describe("OrderService", () => {
   describe("list", () => {
     it("lists orders filtered by availability", async () => {
       const orders = [
-        new Order({ id: "o1", vehicleId: "v1", cpf: "123", status: "Placed" }),
+        new Order({
+          id: "o1",
+          vehicleId: "v1",
+          cpf: "123",
+          status: "Placed",
+          date: new Date(),
+        }),
       ];
       orderRepositoryMock.list.mockResolvedValue(orders);
 
@@ -161,6 +179,7 @@ describe("OrderService", () => {
         vehicleId: "v1",
         cpf: "123",
         status: "Placed",
+        date: new Date(),
       });
       orderRepositoryMock.get.mockResolvedValue(order);
 
@@ -178,6 +197,7 @@ describe("OrderService", () => {
         vehicleId: "v1",
         cpf: "123",
         status: "Placed",
+        date: new Date(),
       });
       const vehicle = new Vehicle({
         id: "v1",
@@ -192,6 +212,7 @@ describe("OrderService", () => {
         vehicleId: order.vehicleId,
         cpf: order.cpf,
         status: "Success",
+        date: order.date,
       });
 
       orderRepositoryMock.get.mockResolvedValue(order);
@@ -210,7 +231,7 @@ describe("OrderService", () => {
       expect(order.status).toBe("Success");
       expect(vehicleServiceMock.update).not.toHaveBeenCalled();
       expect(mockedAxios.patch).toHaveBeenCalledWith(
-        "http://phase4:3000/vehicles/availability",
+        `${URL}/vehicles/availability`,
         { id: vehicle.id, isAvailable: false }
       );
       expect(result).toBe(updatedOrder);
@@ -222,6 +243,7 @@ describe("OrderService", () => {
         vehicleId: "v1",
         cpf: "123",
         status: "Placed",
+        date: new Date(),
       });
       const vehicle = new Vehicle({
         id: "v1",
@@ -236,6 +258,7 @@ describe("OrderService", () => {
         vehicleId: order.vehicleId,
         cpf: order.cpf,
         status: "Failed",
+        date: order.date,
       });
 
       orderRepositoryMock.get.mockResolvedValue(order);
@@ -257,7 +280,7 @@ describe("OrderService", () => {
         isAvailable: true,
       });
       expect(mockedAxios.patch).toHaveBeenCalledWith(
-        "http://phase4:3000/vehicles/availability",
+        `${URL}/vehicles/availability`,
         { id: vehicle.id, isAvailable: true }
       );
       expect(result).toBe(updatedOrder);

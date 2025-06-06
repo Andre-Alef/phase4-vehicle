@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  vehicle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    depends_on:
+      - postgres_vehicle
+    networks:
+      - microservices-network
+
+  postgres_vehicle:
+    image: postgres:13
+    env_file:
+      - .env
+    volumes:
+      - postgres-vehicle-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    external: true
+
+volumes:
+  postgres-vehicle-data:
+    driver: local

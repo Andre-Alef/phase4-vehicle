@@ -5,10 +5,11 @@ interface IOrder {
   vehicleId: string;
   cpf: string;
   status: string;
+  date: Date;
 }
 
 export class OrderFactory {
-  create({ id, vehicleId, cpf, status }: IOrder): Order {
-    return new Order({ id, vehicleId, cpf, status });
+  create({ id, vehicleId, cpf, status, date }: IOrder): Order {
+    return new Order({ id, vehicleId, cpf, status, date });
   }
 }

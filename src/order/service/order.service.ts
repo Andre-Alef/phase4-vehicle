@@ -7,7 +7,7 @@ import { IOrderRepository } from "../repository/order.repository";
 interface ICreateOrder {
   cpf: string;
   vehicleId: string;
-  //date: Date;
+  date: Date;
 }
 
 interface IFinishOrder {
@@ -19,7 +19,7 @@ interface IUpdateOrder {
   id: string;
   status: string;
 }
-const URL = "http://phase4:3000";
+const URL = process.env.PHASE4_API_URL;
 export class OrderService {
   constructor(
     readonly orderRepository: IOrderRepository,
@@ -27,11 +27,12 @@ export class OrderService {
     readonly vehicleService: VehicleService
   ) {}
 
-  async create({ vehicleId, cpf }: ICreateOrder): Promise<Order> {
+  async create({ vehicleId, cpf, date }: ICreateOrder): Promise<Order> {
     const order: Order = this.orderFactory.create({
       vehicleId,
       cpf,
       status: "Placed",
+      date,
     });
 
     const vehicle = await this.vehicleService.get(order.vehicleId);
@@ -50,9 +51,14 @@ export class OrderService {
         id: vehicle.id,
         isAvailable: false,
       });
-      console.log("Veículo criado com sucesso:", response.data);
+      console.log("Veículo reservado com sucesso:", response.data);
     } catch (error) {
-      console.error("Erro ao criar veículo:", error);
+      await this.vehicleService.update({
+        id: order.vehicleId,
+        isAvailable: true,
+      });
+      console.error("Erro ao reservar veículo:", error);
+      throw new Error("Erro ao reservar veículo");
     }
 
     return createdOrder;
@@ -99,9 +105,18 @@ export class OrderService {
         id: vehicle.id,
         isAvailable: paymentInfo === "success" ? false : true,
       });
-      console.log("Veículo criado com sucesso:", response.data);
+      console.log("Pagamento finalizado com sucesso:", response.data);
     } catch (error) {
-      console.error("Erro ao criar veículo:", error);
+      console.error("Erro ao finalizar pagamento:", error);
+      await this.update({
+        id: order.id,
+        status: paymentInfo === "success" ? "Success" : "Failed",
+      });
+      await this.vehicleService.update({
+        id: order.vehicleId,
+        isAvailable: false,
+      });
+      throw new Error("Erro ao finalizar pagamento");
     }
 
     return order;

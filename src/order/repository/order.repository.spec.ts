@@ -29,12 +29,11 @@ describe("OrderRepository", () => {
         status: "pending",
         vehicleId: "v1",
         cpf: "12345678901",
+        date: new Date(),
       };
 
       const mockOrder = {
         ...orderData,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       };
 
       prismaMock.order.upsert.mockResolvedValue(mockOrder as OrderPrisma);
@@ -58,16 +57,14 @@ describe("OrderRepository", () => {
           status: "pending",
           vehicleId: "v1",
           cpf: "12345678901",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          date: new Date(),
         },
         {
           id: "2",
           status: "completed",
           vehicleId: "v2",
           cpf: "10987654321",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          date: new Date(),
         },
       ];
 
@@ -88,8 +85,7 @@ describe("OrderRepository", () => {
         status: "pending",
         vehicleId: "v1",
         cpf: "12345678901",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        date: new Date(),
       };
 
       prismaMock.order.findUniqueOrThrow.mockResolvedValue(

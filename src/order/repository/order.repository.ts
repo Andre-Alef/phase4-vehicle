@@ -9,7 +9,7 @@ export interface IOrderRepository {
 
 export class OrderRepository implements IOrderRepository {
   constructor(readonly prisma = new PrismaClient()) {}
-  async save({ id, status, vehicleId, cpf }: Order): Promise<Order> {
+  async save({ id, status, vehicleId, cpf, date }: Order): Promise<Order> {
     const createdOrder: OrderPrisma = await this.prisma.order.upsert({
       where: { id },
       create: {
@@ -17,6 +17,7 @@ export class OrderRepository implements IOrderRepository {
         status,
         vehicleId,
         cpf,
+        date,
       },
       update: {
         status,
@@ -28,6 +29,7 @@ export class OrderRepository implements IOrderRepository {
       status: createdOrder.status,
       vehicleId: createdOrder.vehicleId,
       cpf: createdOrder.cpf,
+      date: createdOrder.date,
     });
   }
   async list(): Promise<Order[]> {
@@ -40,6 +42,7 @@ export class OrderRepository implements IOrderRepository {
           status: order.status,
           vehicleId: order.vehicleId,
           cpf: order.cpf,
+          date: order.date,
         })
     );
   }
@@ -53,6 +56,7 @@ export class OrderRepository implements IOrderRepository {
       status: order.status,
       vehicleId: order.vehicleId,
       cpf: order.cpf,
+      date: order.date,
     });
   }
 }

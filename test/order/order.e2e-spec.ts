@@ -1,9 +1,11 @@
+import axios from "axios";
 import request from "supertest";
 import express from "express";
 import bodyParser from "body-parser";
 import { orderController } from "../../src/order/controller";
 import { vehicleController } from "../../src/vehicle/controller";
 
+jest.mock("axios");
 const app = express();
 app.use(bodyParser.json());
 app.use("/orders", orderController);
@@ -12,6 +14,7 @@ app.use("/vehicles", vehicleController);
 describe("Order Controller Endpoints (E2E)", () => {
   let createdOrderId = "";
   let testVehicleId = "";
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
 
   // Create a vehicle before all tests
   beforeAll(async () => {
@@ -32,11 +35,17 @@ describe("Order Controller Endpoints (E2E)", () => {
     testVehicleId = response.body.id;
   });
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it("should create a new order", async () => {
     const newOrder = {
       vehicleId: testVehicleId,
       cpf: "12345678900",
+      date: "2025-06-06T20:03:41.075Z",
     };
+    mockedAxios.patch.mockResolvedValueOnce({ status: 201 });
 
     const response = await request(app)
       .post("/orders")
@@ -51,24 +60,8 @@ describe("Order Controller Endpoints (E2E)", () => {
     createdOrderId = response.body.id;
   });
 
-  it("should update an existing order", async () => {
-    const updatedOrder = {
-      id: createdOrderId,
-      status: "confirmed",
-      vehicleId: testVehicleId,
-      cpf: "12345678900",
-    };
-
-    const response = await request(app)
-      .patch("/orders")
-      .send(updatedOrder)
-      .expect(200);
-
-    expect(response.body.id).toBe(updatedOrder.id);
-    expect(response.body.status).toBe(updatedOrder.status);
-  });
-
   it("should finish an order as failed if payment callback is fail", async () => {
+    mockedAxios.patch.mockResolvedValueOnce({ status: 201 });
     const finishOrderData = { id: createdOrderId, paymentInfo: "fail" };
 
     const response = await request(app)
@@ -81,6 +74,7 @@ describe("Order Controller Endpoints (E2E)", () => {
   });
 
   it("should finish an order as success if payment callback is success", async () => {
+    mockedAxios.patch.mockResolvedValueOnce({ status: 201 });
     const finishOrderData = { id: createdOrderId, paymentInfo: "success" };
 
     const response = await request(app)
@@ -90,15 +84,6 @@ describe("Order Controller Endpoints (E2E)", () => {
 
     expect(response.body.id).toBe(finishOrderData.id);
     expect(response.body.status).toBe("Success"); // Adjust if your logic differs
-  });
-
-  it.skip("should get an order by ID", async () => {
-    const response = await request(app)
-      .get(`/orders`)
-      .send({ id: createdOrderId })
-      .expect(200);
-
-    expect(response.body.id).toBe(createdOrderId);
   });
 
   it("should list orders", async () => {

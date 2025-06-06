@@ -30,6 +30,7 @@ orderController.post("/", async (req: any, res) => {
     status: order.status,
     cpf: order.cpf,
     vehicleId: order.vehicleId,
+    date: order.date,
   });
 });
 
@@ -43,6 +44,7 @@ orderController.post("/finish", async (req: any, res) => {
     status: order.status,
     cpf: order.cpf,
     vehicleId: order.vehicleId,
+    date: order.date,
   });
 });
 
@@ -63,6 +65,7 @@ orderController.get("/:id", async (req: any, res) => {
     status: order.status,
     cpf: order.cpf,
     vehicleId: order.vehicleId,
+    date: order.date,
   });
 });
 
@@ -76,6 +79,7 @@ orderController.get("/", async (req: any, res) => {
       status: order.status,
       cpf: order.cpf,
       vehicleId: order.vehicleId,
+      date: order.date,
     }))
   );
 });
