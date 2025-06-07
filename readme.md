@@ -27,44 +27,17 @@ docker network create microservices-network
 
 ## Curls para teste
 
-# Criar veiculo
-
-curl --location 'http://localhost:3000/vehicles' \
---header 'Content-Type: application/json' \
---data '{
-"brand":"Gm",
-"model": "Agile",
-"year":2014,
-"color": "preto",
-"price": 30,
-"isAvailable": true
-}'
-
 # Listar veiculos
 
-curl --location 'http://localhost:3000/vehicles?isAvailable=true'
-
-# Atualizar veiculo
-
-curl --location --request PATCH 'http://localhost:3000/vehicles' \
---header 'Content-Type: application/json' \
---data '{
-"id": "9a0e5418-79c6-455b-b67a-583085a5fa2f",
-"brand":"Honda",
-"model": "City",
-"year":2010,
-"color": "red",
-"price": 16,
-"isAvailable": true
-}'
+curl --location 'http://localhost:3001/vehicles?isAvailable=true'
 
 # Criar ordem de compra
 
-curl --location --request POST 'http://localhost:3000/orders' \
+curl --location --request POST 'http://localhost:3001/orders' \
 
 # Finalizar compra
 
-curl --location 'http://localhost:3000/orders/finish' \
+curl --location 'http://localhost:3001/orders/finish' \
 --header 'Content-Type: application/json' \
 
 --data '{
@@ -72,3 +45,11 @@ curl --location 'http://localhost:3000/orders/finish' \
 "paymentInfo": success
 
 }'
+
+## Coverage
+
+![Cobertura](image.png)
+
+## Arquitetura
+
+![Arquitetura](image-1.png)
